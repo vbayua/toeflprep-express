@@ -1,3 +1,3 @@
 module.exports = {
-  secret: 'toeflprep-skripsi-2022'
+  secret: process.env.SECRET_KEY
 };

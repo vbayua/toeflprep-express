@@ -18,7 +18,7 @@ verifyToken = (request, response, next) => {
     if (err) {
       return response.status(401).send({
         message: 'Unauthorized!',
-      })
+      });
     }
     request.userId = decoded.id;
     next();

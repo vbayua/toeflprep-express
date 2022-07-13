@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -5,18 +6,17 @@ const app = express();
 
 // database connection
 const db = require('./app/models');
-const dbConfig = require('./app/config');
 const Role = db.role;
-const connectionString = `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`;
+
 // Call the connection
-db.mongoose.connect(connectionString, {
+db.mongoose.connect(`mongodb+srv://${process.env.MONGODB_URI}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
   console.log('Successfuly connected to mongodb instance');
   initial();
 }).catch((error) => {
-  console.error('Connection error', err);
+  console.error('Connection error', error);
   process.exit();
 });
 
@@ -40,11 +40,18 @@ app.get('/', (requests, response) => {
   });
 });
 
+// Routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+
 // set port and listen to requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
+
+console.log(process.env);
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
