@@ -34,7 +34,7 @@ isAdmin = (request, response, next) => {
       return;
     }
     Role.find(
-      { _id: {$in: user.roles} },
+      { _id: { $in: user.roles } },
       (err, roles) => {
         if (err) {
           response.status(500).send({
@@ -55,6 +55,26 @@ isAdmin = (request, response, next) => {
     );
   });
 };
+
+isMe = (request, response, next) => {
+  User.findById(request.userId).exec((err, user) => {
+    if (err) {
+      response.status(500).send({
+        message: err,
+      });
+      return;
+    }
+    // Check if its the user
+    if (request.params.username === user.username) {
+      next();
+      return;
+    }
+    response.status(403).send({
+      message: 'This is not you'
+    });
+    return;
+  })
+}
 
 isModerator = (request, response, next) => {
   User.findById(request.userId).exec((err, user) => {
@@ -91,6 +111,7 @@ isModerator = (request, response, next) => {
 const authJwt = {
   verifyToken,
   isAdmin,
+  isMe,
   isModerator,
 };
 
