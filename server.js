@@ -22,7 +22,7 @@ db.mongoose.connect(`mongodb+srv://${process.env.MONGODB_URI}`, {
 
 // Set app origin URL
 const corsOptions = {
-  origin: 'http://localhost:5000'
+  origin: 'http://localhost:9000'
 };
 
 app.use(cors(corsOptions));
@@ -50,8 +50,6 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port : ${PORT}`);
 });
-
-console.log(process.env);
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
