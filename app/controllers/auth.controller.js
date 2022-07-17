@@ -25,11 +25,12 @@ exports.signup = (request, response) => {
       Role.find(
         { name: { $in: request.body.roles } },
         (err, roles) => {
-          if (err) { response.status(500).send({
-            message: err,
-          }
-          ); 
-          return;
+          if (err) {
+            response.status(500).send({
+              message: err,
+            }
+            );
+            return;
           }
 
           user.roles = roles.map(role => role._id);
@@ -63,7 +64,8 @@ exports.signup = (request, response) => {
             return;
           }
           response.send({
-            message: 'User was registered successfuly'
+            message: 'User was registered successfuly',
+            user: user,
           });
         });
       });
@@ -75,48 +77,48 @@ exports.signin = (request, response) => {
   User.findOne({
     username: request.body.username,
   })
-  .populate('roles', '-__v')
-  .exec((err, user) => {
-    if (err) {
-      response.status(500).send({
-        message: err,
-      });
-      return;
-    }
-    if (!user) {
-      return response.status(404).send({
-        message: 'User not found',
-      });
-    }
-    let passwordIsValid = bcrypt.compareSync(
-      request.body.password,
-      user.password
-    );
+    .populate('roles', '-__v')
+    .exec((err, user) => {
+      if (err) {
+        response.status(500).send({
+          message: err,
+        });
+        return;
+      }
+      if (!user) {
+        return response.status(404).send({
+          message: 'User not found',
+        });
+      }
+      let passwordIsValid = bcrypt.compareSync(
+        request.body.password,
+        user.password
+      );
 
-    if (!passwordIsValid) {
-      return response.status(401).send({
-        accessToken: null,
-        message: 'Invalid Password',
+      if (!passwordIsValid) {
+        return response.status(401).send({
+          accessToken: null,
+          message: 'Invalid Password',
+        });
+      }
+
+      let token = jwt.sign(
+        { id: user.id },
+        config.secret,
+        { expiresIn: 8640 } //use env maybe
+      );
+
+      let authorities = [];
+      for (let index = 0; index < user.roles.length; index++) {
+        authorities.push(`${user.roles[index].name.toLowerCase()}`);
+      }
+      response.status(200).send({
+        id: user._id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        roles: authorities,
+        accessToken: token
       });
-    }
-
-    let token = jwt.sign(
-      { id: user.id },
-      config.secret,
-      { expiresIn: 8640 } //use env maybe
-    );
-
-    let authorities = [];
-    for (let index = 0; index < user.roles.length; index++) {
-      authorities.push(`ROLE_${user.roles[index].name.toUpperCase()}`);
-    }
-    response.status(200).send({
-      id: user._id,
-      username: user.username,
-      name: user.name,
-      email: user.email,
-      roles: authorities,
-      accessToken: token
     });
-  });
 }

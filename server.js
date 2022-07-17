@@ -43,6 +43,7 @@ app.get('/', (requests, response) => {
 // Routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
+require('./app/routes/admin.routes')(app);
 
 
 // set port and listen to requests

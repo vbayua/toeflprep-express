@@ -1,21 +1,80 @@
 // Admin responsibilites are managing user
-
 // Call db models
 const db = require('../models');
-const bcrypt = require('bcryptjs');
 // Bcrypt
+const bcrypt = require('bcryptjs');
+
+const UserModel = db.user;
+const RoleModel = db.role;
 
 exports.getAllUser = (req, res) => {
-  // Code
+  UserModel.find((err, users) => {
+    if (err) {
+      res.status(500).send({
+        message: 'Couldnt fetch users'
+      });
+      return;
+    }
+    res.send({
+      users: users
+    })
+  })
 }
 
-exports.getUserById = (req, res) => {
-  // Code
+exports.getUserByUsername = (req, res) => {
+  const query = {
+    username: req.params.username,
+  }
+  UserModel.findOne(query, (err, user) => {
+    if (err) {
+      res.status(500).send({
+        message: err,
+      });
+      return;
+    }
+    res.send(user)
+  })
+}
+
+exports.getUserByRoles = (req, res) => {
+  UserModel.find().populate({
+    path: 'roles',
+  }).exec(
+    (err, users) => {
+      if (err) {
+        res.status(500).send({
+          message: err,
+        });
+        return;
+      }
+      res.send(users);
+    }
+  )
 }
 
 // Admin User CRUD
-const UserModel = db.user
-const RoleModel = db.role
+
+exports.updateUserFullName = (req, res) => {
+  const query = {
+    username: req.body.username,
+  }
+  const update = {
+    name: req.body.name
+  }
+  UserModel.findOneAndUpdate(query, update, {
+    new: true,
+  }, (err, userdoc) => {
+    if (err) {
+      res.status(500).send({
+        message: err,
+      });
+      return;
+    }
+    res.send({
+      message: 'Name of user updated'
+    });
+  });
+}
 
 exports.createNewUser = (request, response) => {
   const user = new UserModel({
@@ -31,7 +90,6 @@ exports.createNewUser = (request, response) => {
       });
       return;
     }
-    // Check if payload has roles
     if (request.body.roles) {
       RoleModel.find(
         { name: { $in: request.body.roles } },
