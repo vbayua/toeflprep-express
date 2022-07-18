@@ -32,8 +32,7 @@ exports.getAllExam = (req, res) => {
       return;
     }
     res.status(200).send({
-      message: 'All exam data',
-      data: exams
+      exams
     })
   });
 }
@@ -99,7 +98,7 @@ exports.getQuestionsInExam = (req, res) => {
   Exam.findOne({
     _id: req.params.id
   }).populate('questions', '').exec(
-    (err, doc) => {
+    (err, exam) => {
       if (err) {
         res.status(500).send({
           message: err
@@ -107,7 +106,7 @@ exports.getQuestionsInExam = (req, res) => {
         return;
       }
       res.status(200).send({
-        data: doc
+        exam
       });
     }
   )

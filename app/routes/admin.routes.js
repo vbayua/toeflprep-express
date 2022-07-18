@@ -26,8 +26,8 @@ module.exports = function (app) {
   app.put('/api/admin/exam/update', [authJwt.verifyToken, authJwt.isAdmin], examController.updateExamById);
   app.delete('/api/admin/exam', [authJwt.verifyToken, authJwt.isAdmin], examController.deleteExamById);
   // Receive Parameters
-  app.get('/api/admin/exam', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
-  // app.get('/api/admin/exam/:id', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
+  // app.get('/api/admin/exam', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
+  app.get('/api/admin/exam/:id', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
 
 
   // QUESTION DATA ROUTES
