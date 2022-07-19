@@ -40,8 +40,7 @@ const questionSchema = Schema(
       ref: 'Exam'
     },
     questionType: {
-      type: String,
-      required: true
+      type: String
     },
     imageUrl: {
       type: String,
@@ -60,7 +59,7 @@ const questionSchema = Schema(
       type: String,
     },
     answerOptions: {
-      type: Array,
+      type: Array
     }
   }
 );

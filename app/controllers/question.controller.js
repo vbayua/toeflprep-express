@@ -3,7 +3,7 @@ const db = require('../models');
 const Exam = db.exam.Exam;
 const Questions = db.exam.Questions;
 
-exports.addQuestion = (req, res) => {
+exports.addQuestion = (req, res) => { 
   const question = new Questions(
     {
       testExam: req.params.id,
