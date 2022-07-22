@@ -105,7 +105,7 @@ exports.signin = (request, response) => {
       let token = jwt.sign(
         { id: user.id },
         config.secret,
-        { expiresIn: 8640 } //use env maybe
+        { expiresIn: '10h' } //use env maybe
       );
 
       let authorities = [];

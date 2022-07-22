@@ -55,6 +55,22 @@ exports.getExamById = (req, res) => {
   });
 }
 
+exports.getActiveExam = (req, res) => {
+  Exam.find({
+    status: 'active'
+  }).exec((err, exam) => {
+    if (err) {
+      res.staus(500).send({
+        message: err,
+      })
+      return;
+    }
+    res.status(200).send({
+      exam
+    })
+  })
+}
+
 exports.updateExamById = (req, res) => {
   const query = {
     _id: req.query.id

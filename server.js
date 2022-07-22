@@ -31,7 +31,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // parse request of content type application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1000000 }));
+
+// Upload FIle
+const upload = require('./app/routes/upload.routes')
+
+app.use(upload)
 
 // Example simple route
 app.get('/', (requests, response) => {
@@ -63,7 +68,7 @@ function initial() {
       new Role({ name: 'moderator' }).save(err => {
         if (err) { console.log('error', err) }
         console.log('added moderator to roles collection');
-      });      
+      });
 
       new Role({ name: 'admin' }).save(err => {
         if (err) { console.log('error', err) }

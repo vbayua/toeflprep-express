@@ -51,6 +51,9 @@ const questionSchema = Schema(
     questionPart: {
       type: String,
     },
+    paragraphs: {
+      type: String,
+    },
     question: {
       type: String,
       required: true,

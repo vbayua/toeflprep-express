@@ -1,7 +1,9 @@
 const { authJwt } = require('../middleware');
+
 const controller = require('../controllers/admin.controller');
 const examController = require('../controllers/examdata.controller');
-const questionController = require('../controllers/question.controller')
+const questionController = require('../controllers/question.controller');
+const uploadController = require('../controllers/upload.controller');
 
 module.exports = function (app) {
   app.use(function (request, response, next) {
@@ -28,9 +30,19 @@ module.exports = function (app) {
   // Receive Parameters
   // app.get('/api/admin/exam', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
   app.get('/api/admin/exam/:id', [authJwt.verifyToken, authJwt.isAdmin], examController.getQuestionsInExam);
-
-
+  
+  
   // QUESTION DATA ROUTES
   app.get('/api/admin/exam/questions', [authJwt.verifyToken, authJwt.isAdmin], questionController.getQuestionsInExam);
+  app.get('/api/exam', [authJwt.verifyToken], examController.getActiveExam);
+  app.get('/api/exam/:id/listening-questions', [authJwt.verifyToken], questionController.getListeningQuestions);
+  app.get('/api/exam/:id/reading-questions', [authJwt.verifyToken], questionController.getReadingQuestions);
+  app.get('/api/exam/:id/structure-questions', [authJwt.verifyToken], questionController.getStructureQuestions);
   app.post('/api/admin/exam/:id/question/add', [authJwt.verifyToken, authJwt.isAdmin], questionController.addQuestion);
+
+
+  // Azure Blob Storage
+  app.get('/api/azureBlob', [authJwt.verifyToken, authJwt.isAdmin], uploadController.listBlobs)
+  app.get('/api/azureBlob/:filename', [authJwt.verifyToken, authJwt.isAdmin], uploadController.getBlobInfo)
+  app.delete('/api/azureBlob/delete/:filename', [authJwt.verifyToken, authJwt.isAdmin], uploadController.deleteBlob)
 }
