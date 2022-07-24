@@ -16,12 +16,63 @@ const responseSchema = Schema(
       ref: 'Questions'
     },
     answerChoice: {
-      type: String,
-      required: true
+      type: String
+    },
+    isCorrect: {
+      type: Boolean
     }
   }
 )
 
-const Responses = mongoose.model('Responses', responseSchema);
+const resultSchema = Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users'
+  },
+  examId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exam'
+  },
+  name: {
+    type: String,
+  },
+  major: {
+    type: String,
+  },
+  date: {
+    type: Date,
+  },
+  listeningRaw: {
+    type: Number,
+  },
+  structureRaw: {
+    type: Number,
+  },
+  readingRaw: {
+    type: Number,
+  },
+  listeningScaled: {
+    type: Number,
+  },
+  structureScaled: {
+    type: Number,
+  },
+  readingScaled: {
+    type: Number,
+  },
+  totalRaw: {
+    type: Number,
+  },
+  totalScaled: {
+    type: Number,
+  },
+  responses: [responseSchema],
+})
 
-module.exports = Responses;
+const Responses = mongoose.model('Responses', responseSchema);
+const Results = mongoose.model('Results', resultSchema);
+
+module.exports = {
+  Responses,
+  Results
+};

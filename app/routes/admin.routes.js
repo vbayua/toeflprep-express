@@ -4,7 +4,7 @@ const controller = require('../controllers/admin.controller');
 const examController = require('../controllers/examdata.controller');
 const questionController = require('../controllers/question.controller');
 const uploadController = require('../controllers/upload.controller');
-
+const responseController = require('../controllers/response.controller');
 module.exports = function (app) {
   app.use(function (request, response, next) {
     response.header(
@@ -40,6 +40,9 @@ module.exports = function (app) {
   app.get('/api/exam/:id/structure-questions', [authJwt.verifyToken], questionController.getStructureQuestions);
   app.post('/api/admin/exam/:id/question/add', [authJwt.verifyToken, authJwt.isAdmin], questionController.addQuestion);
 
+  // RESPONSE ROUTES
+  app.post('/api/responses', [authJwt.verifyToken], responseController.saveResponses)
+  app.post('/api/results', [authJwt.verifyToken], responseController.saveNestedResponses)
 
   // Azure Blob Storage
   app.get('/api/azureBlob', [authJwt.verifyToken, authJwt.isAdmin], uploadController.listBlobs)
