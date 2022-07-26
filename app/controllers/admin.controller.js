@@ -21,6 +21,20 @@ exports.getAllUser = (req, res) => {
   })
 }
 
+exports.getUserMhs = (req, res) => {
+  UserModel.find().populate({ path: 'roles', select: 'name -_id' }).exec((err, user) => {
+    if (err) {
+      res.status(500).send({
+        err
+      })
+      return
+    }
+    res.status(200).send({
+      user
+    })
+  })
+}
+
 exports.getUserByUsername = (req, res) => {
   const query = {
     username: req.params.username,
@@ -94,11 +108,12 @@ exports.createNewUser = (request, response) => {
       RoleModel.find(
         { name: { $in: request.body.roles } },
         (err, roles) => {
-          if (err) { response.status(500).send({
-            message: err,
-          }
-          ); 
-          return;
+          if (err) {
+            response.status(500).send({
+              message: err,
+            }
+            );
+            return;
           }
 
           user.roles = roles.map(role => role._id);

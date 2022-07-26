@@ -20,6 +20,12 @@ const User = mongoose.model('User', new mongoose.Schema({
       ref: 'Role',
     }
   ],
+  results: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Results'
+    }
+  ]
 }));
 
 module.exports = User;

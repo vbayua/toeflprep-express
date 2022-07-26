@@ -21,11 +21,12 @@ db.mongoose.connect(`mongodb+srv://${process.env.MONGODB_URI}`, {
 });
 
 // Set app origin URL
-const corsOptions = {
-  origin: 'http://localhost:9000'
-};
+// const corsOptions = {
+//   origin: ['http://localhost:9000', 'http://localhost:4000']
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 
 // parse request to json type
 app.use(express.json());

@@ -24,7 +24,10 @@ exports.createExam = (req, res) => {
 }
 
 exports.getAllExam = (req, res) => {
-  Exam.find((err, exams) => {
+  const filter = {
+    status: { $ne: 'archived' }
+  }
+  Exam.find(filter,null,null,(err, exams) => {
     if (err) {
       res.status(500).send({
         message: err,
@@ -57,13 +60,45 @@ exports.getExamById = (req, res) => {
 
 exports.getActiveExam = (req, res) => {
   Exam.find({
-    status: 'active'
+    status: 'active' || 'archived'
   }).exec((err, exam) => {
     if (err) {
-      res.staus(500).send({
+      res.status(500).send({
         message: err,
       })
       return;
+    }
+    res.status(200).send({
+      exam
+    })
+  })
+}
+
+exports.getArchivedExam = async (req, res) => {
+  Exam.find({
+    status: 'archived'
+  }).exec((err, exam) => {
+    if (err) {
+      res.status(500).send({
+        message: err,
+      })
+      return;
+    }
+    res.status(200).send({
+      exam
+    })
+  })
+}
+
+exports.getInactiveExam = async (req, res) => {
+  Exam.find({
+    status: 'inactive'
+  }).exec((err, exam) => {
+    if (err) {
+      res.status(500).send({
+        message: err
+      })
+      return
     }
     res.status(200).send({
       exam
@@ -93,6 +128,29 @@ exports.updateExamById = (req, res) => {
         data: exam
       });
     })
+}
+
+exports.updateExamStatusById = (req, res) => {
+
+  const filter = {
+    _id: req.params.id
+  }
+  const update = {
+      status: req.query.status
+  }
+  Exam.findOneAndUpdate(filter, update, { new: true }).then(
+    exam => {
+      return res.status(200).send({
+        message: 'Success',
+        exam
+      })
+    },
+    error => {
+      return res.status(500).send({
+        error
+      })
+    }
+  )
 }
 
 exports.deleteExamById = (req, res) => {

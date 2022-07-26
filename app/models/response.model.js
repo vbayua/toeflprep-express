@@ -5,7 +5,7 @@ const responseSchema = Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Users'
+      ref: 'User'
     },
     examId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -27,7 +27,7 @@ const responseSchema = Schema(
 const resultSchema = Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users'
+    ref: 'User'
   },
   examId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,7 +40,7 @@ const resultSchema = Schema({
     type: String,
   },
   date: {
-    type: Date,
+    type: String,
   },
   listeningRaw: {
     type: Number,

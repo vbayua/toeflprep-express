@@ -54,28 +54,30 @@ const scaleRead = (reading = 0) => {
 
 const scaleTotal = (listen, structure, read) => {
   const scaleTotal = listen + structure + read;
-  const score = Math.floor((scaleTotal * 10)/3);
+  const score = Math.floor((scaleTotal * 10) / 3);
   return score;
 }
 
 exports.saveNestedResponses = async (req, res) => {
   const filter = {
     userId: req.body.userId,
-    examId: req.body.examId
+    examId: req.body.examId,
   };
-  const responseData = req.body.responses;
-  const update = {
-    listeningRaw: req.body.listeningRaw,
-    structureRaw: req.body.structureRaw,
-    readingRaw: req.body.readingRaw,
-    responses: responseData
-  }
-
+  const responses = req.body.responses;
   try {
-    const result = await Results.findOneAndUpdate(filter, update, {
-      new: true,
-      upsert: true
-    })
+    const result = await Results.findOneAndUpdate(filter, {
+      userId: req.body.userId,
+      examId: req.body.examId,
+      listeningRaw: req.body.listeningRaw,
+      structureRaw: req.body.structureRaw,
+      readingRaw: req.body.readingRaw,
+      date: req.body.date,
+      $addToSet: { responses }
+    },
+      {
+        new: true,
+        upsert: true
+      })
     const rawScore = calculateRawScore(result.listeningRaw, result.structureRaw, result.readingRaw)
     const listenScaled = scaleListen(result.listeningRaw)
     const structureScaled = scaleStructure(result.structureRaw)
@@ -86,17 +88,81 @@ exports.saveNestedResponses = async (req, res) => {
       listeningScaled: listenScaled,
       structureScaled: structureScaled,
       readingScaled: readingScaled,
-      totalScaled: totalScale 
+      totalScaled: totalScale
     }
-    const result2 = await Results.findOneAndUpdate(filter, updateScore, {
+    await Results.findOneAndUpdate(filter, updateScore, {
       new: true,
       upsert: true
     })
     return res.status(200).send({
       message: 'Success',
-      results: result,
-      updated: result2,
-      raw: rawScore
+      result
+    })
+  } catch (error) {
+    return res.status(500).send({
+      message: 'Failed',
+      error
+    })
+  }
+}
+
+
+// EXPERIMENTAL BELOW
+exports.saveResponses = async (req, res) => {
+  const response = req.body.responses
+
+  try {
+    const responses = await Responses.create(response).then(docResponse => {
+      return Results.findByIdAndUpdate({ examId: docResponse.examId, userId: docResponse.userId }, { $push: { responses: docResponse._id } },
+        { new: true, upsert: true }
+        )
+    })
+    res.status(200).send({
+      responses
+    })
+  } catch (error) {
+    res.status(500).send({
+      error
+    })
+  }
+}
+
+exports.saveOrUpdateResult = async (req, res) => {
+  const filter = {
+    userId: req.body.userId,
+    examId: req.body.examId,
+  };
+  try {
+    const result = await Results.findOneAndUpdate(filter, {
+      userId: req.body.userId,
+      examId: req.body.examId,
+      listeningRaw: req.body.listeningRaw,
+      structureRaw: req.body.structureRaw,
+      readingRaw: req.body.readingRaw,
+    },
+      {
+        new: true,
+        upsert: true
+      })
+    const rawScore = calculateRawScore(result.listeningRaw, result.structureRaw, result.readingRaw)
+    const listenScaled = scaleListen(result.listeningRaw)
+    const structureScaled = scaleStructure(result.structureRaw)
+    const readingScaled = scaleRead(result.readingRaw)
+    const totalScale = scaleTotal(listenScaled, structureScaled, readingScaled)
+    const updateScore = {
+      totalRaw: rawScore,
+      listeningScaled: listenScaled,
+      structureScaled: structureScaled,
+      readingScaled: readingScaled,
+      totalScaled: totalScale
+    }
+    await Results.findOneAndUpdate(filter, updateScore, {
+      new: true,
+      upsert: true
+    })
+    return res.status(200).send({
+      message: 'Success',
+      result
     })
   } catch (error) {
     return res.status(500).send({

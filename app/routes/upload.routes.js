@@ -16,15 +16,15 @@ const getBlobName = originalName => {
   return `${identifier}-${originalName}`;
 };
 
+const removeSpaces = str => str.replace(/\s/g, '');
+
 router.post('/api/azureBlob/upload', multer({ storage: multer.memoryStorage() }).single('audiofile'), (req, res) => {
-  console.log(req.file.originalname)
   const
-    blobName = req.file.originalname
+    blobName = removeSpaces(req.file.originalname)
     , blobService = new BlockBlobClient(process.env.AZURE_STORAGE_CONNECTION_STRING, containerName, blobName)
     , stream = getStream(req.file.buffer)
     , streamLength = req.file.buffer.length
     ;
-  console.log(req.file.originalname)
 
   blobService.uploadStream(stream, streamLength)
     .then(
