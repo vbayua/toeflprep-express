@@ -26,7 +26,7 @@ const calculateRawScore = (listening = 0, structure = 0, reading = 0) => {
 }
 
 const scaleListen = (listening = 0) => {
-  let score = (listening / 30) * 50
+  let score = Math.floor((listening / 30) * 50)
   if (score < 20) {
     score = 20
     return score
@@ -35,7 +35,7 @@ const scaleListen = (listening = 0) => {
 }
 
 const scaleStructure = (structure = 0) => {
-  let score = (structure / 25) * 50
+  let score = Math.floor((structure / 25) * 50)
   if (score < 20) {
     score = 20
     return score
@@ -44,7 +44,7 @@ const scaleStructure = (structure = 0) => {
 }
 
 const scaleRead = (reading = 0) => {
-  let score = (reading / 40) * 50
+  let score = Math.floor((reading / 40) * 50)
   if (score < 20) {
     score = 20
     return score
@@ -115,7 +115,7 @@ exports.saveResponses = async (req, res) => {
     const responses = await Responses.create(response).then(docResponse => {
       return Results.findByIdAndUpdate({ examId: docResponse.examId, userId: docResponse.userId }, { $push: { responses: docResponse._id } },
         { new: true, upsert: true }
-        )
+      )
     })
     res.status(200).send({
       responses
