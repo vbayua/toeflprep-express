@@ -26,7 +26,7 @@ const calculateRawScore = (listening = 0, structure = 0, reading = 0) => {
 }
 
 const scaleListen = (listening = 0) => {
-  let score = Math.floor((listening / 30) * 50)
+  let score = Math.trunc(Math.floor((listening / 30) * 50))
   if (score < 20) {
     score = 20
     return score
@@ -35,7 +35,7 @@ const scaleListen = (listening = 0) => {
 }
 
 const scaleStructure = (structure = 0) => {
-  let score = Math.floor((structure / 25) * 50)
+  let score = Math.trunc(Math.floor((structure / 25) * 50))
   if (score < 20) {
     score = 20
     return score
@@ -44,7 +44,7 @@ const scaleStructure = (structure = 0) => {
 }
 
 const scaleRead = (reading = 0) => {
-  let score = Math.floor((reading / 40) * 50)
+  let score = Math.trunc(Math.floor((reading / 40) * 50))
   if (score < 20) {
     score = 20
     return score
@@ -54,7 +54,7 @@ const scaleRead = (reading = 0) => {
 
 const scaleTotal = (listen, structure, read) => {
   const scaleTotal = listen + structure + read;
-  const score = Math.floor((scaleTotal * 10) / 3);
+  const score = Math.trunc(Math.floor((scaleTotal * 10) / 3));
   return score;
 }
 
